@@ -1,0 +1,20 @@
+{
+  "best_model": ".\\output\\best_model/model-3862",
+  "best_valid_ppl": 1.453985333442688,
+  "encoding": "utf-8",
+  "latest_model": ".\\output\\save_model/model-3862",
+  "params": {
+    "batch_size": 40,
+    "dropout": 0.4,
+    "embedding_size": 0,
+    "hidden_size": 256,
+    "input_dropout": 0.0,
+    "learning_rate": 0.003,
+    "max_grad_norm": 5,
+    "model": "lstm",
+    "num_layers": 3,
+    "num_unrollings": 20,
+    "vocab_size": 54
+  },
+  "vocab_file": ".\\output\\vocab.json"
+}

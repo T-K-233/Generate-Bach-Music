@@ -1,0 +1,9 @@
+./history/
+tensorboard_log/
+
+*.data-00000-of-00001
+*.index
+*.meta
+!model-218203.data-00000-of-00001
+!model-218203.index
+!model-218203.meta

@@ -8,9 +8,9 @@ def train_model():
 
 
 def generate():
-    result = sample.run(100000)
+    result = sample.run(1000)
     util.decode(result, util.Params())
-    # print(result)
+    print(result)
 
 
 generate()

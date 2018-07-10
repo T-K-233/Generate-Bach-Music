@@ -1,12 +1,10 @@
-# Generate Bach's Music
-
 An application using crazydonkey200's [tensorflow-char-rnn](https://github.com/crazydonkey200/tensorflow-char-rnn)
 
 
 
-![](https://raw.githubusercontent.com/T-K-233/Generate-Bach-Music/master/demo-result/midi.png)
+![](https://github.com/T-K-233/Generate-Bach-Music/blob/master/demo-result/first-good-piece-visualized.png)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/kmbmLfTZc2w" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/9aHlzev4pPM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 
 

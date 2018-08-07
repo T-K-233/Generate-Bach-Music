@@ -88,7 +88,7 @@ tensorboard --logdir=your-output-folder/tensorboard_log
 
 ## Publication
 
-[music generation based on char-rnn neural network](doc/music_generation_based_on_char-rnn_neural_network.html), published at [Artificial Intelligence VIEW](基于Char-RNN的音乐生成 实践与算法作曲尝试.pdf)
+[music generation based on char-rnn neural network](docs/music_generation_based_on_char-rnn_neural_network.html), published at [Artificial Intelligence VIEW](https://github.com/T-K-233/Generate-Bach-Music/blob/master/docs/%E5%9F%BA%E4%BA%8EChar-RNN%E7%9A%84%E9%9F%B3%E4%B9%90%E7%94%9F%E6%88%90%20%E5%AE%9E%E8%B7%B5%E4%B8%8E%E7%AE%97%E6%B3%95%E4%BD%9C%E6%9B%B2%E5%B0%9D%E8%AF%95.pdf)
 
 
 

@@ -1,16 +1,21 @@
-An application using crazydonkey200's [tensorflow-char-rnn](https://github.com/crazydonkey200/tensorflow-char-rnn)
+# Generate Bach Music
+
+music generation based on Char-RNN neural network
 
 
 
-![](https://github.com/T-K-233/Generate-Bach-Music/blob/master/demo-result/first-good-piece-visualized.png)
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/9aHlzev4pPM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+![](docs/first-good-piece-visualized.png)
 
 
 
-## Installation
+## Demo
 
-### Dependencies
+→ [YouTube Video](https://www.youtube.com/watch?v=9aHlzev4pPM) ←
+
+
+
+## Dependencies
+
 - Python 3
 - TensorFlow >= 1.2
 
@@ -58,22 +63,29 @@ To generate midi file from the best model of an experiment:
 ```bash
 python console.py
 ```
-The midi file will be generated under `output` folder.
+The midi file will be generated inside `output` folder.
 
 
 
-## Visualization
+### Visualization
+
 To use Tensorboard (a visualization tool in TensorFlow) to [visualize the learning](https://www.tensorflow.org/get_started/summaries_and_tensorboard#tensorboard-visualizing-learning) (the "events" tab) and [the computation graph](https://www.tensorflow.org/versions/r0.8/how_tos/graph_viz/index.html#tensorboard-graph-visualization) (the "graph" tab).
 
-run
+run:
 ```bash
 tensorboard --logdir=your-output-folder/tensorboard_log
 ```
 
 
 
-### P.S.
+## Publication
 
-A useful picture:
+[music generation based on char-rnn neural network](doc/music_generation_based_on_char-rnn_neural_network.html), published at [Artificial Intelligence VIEW](基于Char-RNN的音乐生成 实践与算法作曲尝试.pdf)
+
+
+
+## Resource
+
+Here is a useful picture showing the relation between notes:
 
 ![](https://raw.githubusercontent.com/Conchylicultor/MusicGenerator/master/data/test/midi_keyboard_correspondance.png)

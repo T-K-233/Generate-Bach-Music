@@ -1,0 +1,233 @@
+<h1>基于 Char-RNN 的音乐生成 实践与算法作曲尝试</h1>
+<hr/>
+<div class="section">
+<p>池雨峰 (-T.K.-)</p>
+<p>中国人民大学附属中学中外合作办学项目</p>
+<p>tk.fantasy.233@gmail.com</p>
+</div>
+<hr/>
+<div class="section">
+  <blockquote> - 奈能学会老师巴赫的作品吗？</blockquote>
+  <blockquote> - 当然可以</blockquote>
+</div>
+
+<div class="section">
+  <h2>关键词</h2>
+  <ul>
+    <li>RNN / 时间递归神经网络</li>
+    <li>LSTM / 长短期记忆网络</li>
+    <li>Algorithmic Composition / 算法作曲</li>
+    <li>MIDI Generation / MIDI 音乐生成</li>
+  </ul>
+</div>
+<div class="section">
+  <h2>背景</h2>
+  <h3>时间递归神经网络</h3>
+  <p><a href="https://baike.baidu.com/item/%E9%80%92%E5%BD%92%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/16020230">时间递归神经网络</a>（RNN，<a href="https://en.wikipedia.org/wiki/Recurrent_neural_network">Recurrent neural Network</a>）是上世纪 80 年代末提出的一种神经网络结构模型，这种网络的本质特征是处理单元之间内部的反馈连接和前馈连接。从系统观点看，它是一个反馈动力系统，在计算过程中体现过程动态特性，比前馈神经网络具有更强的动态行为和计算能力。循环神经网络现已成为国际上神经网络专家研究的重要对象之一，其原理如下图所示。</p>
+  <img width="50%" alt="图1 RNN网络" src="rnn_network.png">
+  
+  <h3>AI 作曲历史</h3>
+  <p>1843 年，Ada Lovelace 曾在作品中写道：“引擎可以编写精致而科学的音乐作品， 作品很复杂，范围很广。”1952 年，Lejaren Hiller发现将计算机的控制变量由几何数转 换成音符，这些代码就完全可以用于谱曲。他利用计算机进行了一系列作曲技法实验。 1957年，历史上第一支完全由计算机生成的音乐作品诞生，即弦乐四重奏《依利亚克 组曲》（Illiac Suite）。1960 年，俄罗斯研究者 R.Kh.Zaripov发行了全世界第一篇关于 用「Ural-1」计算机进行算法音乐作曲的论文。1980年，执教于美国加州大学圣克鲁兹分校艺术系的大卫·库佩（David Cope）从编写作曲程序出发，着迷于通过基于乐理 的技法重组来创造模拟不同过往音乐家风格的音乐。他开发的作曲软件 Experiments in Musical Intelligence（EMI）能通过特殊的匹配过程，专门模仿约翰·塞巴斯蒂安·巴赫 的风格。 </p>
+  <p>在卢森堡和伦敦，Pierre Barreau、Denis Shtefan、Arnaud Decker 和 Vincent Barreau创造了一种名为 Aiva 的 AI，并教它如何创作古典音乐，其作品被用作电影导演、广告 公司，甚至是游戏工作室的配乐。Google Brain 研发了一款名为Magenta的AI作曲软件， 利用特定的音乐风格生成新的音乐。索尼公司开发了AI 谱曲工具 Flow Machines，并用 它制作了一首名叫《Daddy’s Car》的歌曲。</p>
+  <p>从基础理论设计与数学逻辑同构并进行符号化组织的角度来看，音乐虽然是一门艺术，却有很强的可计算性，音乐模式背后蕴含着数学之美。常规的作曲技法，如旋律 的重复、模进、转调、模糊、音程或节奏压扩，和声与对位中的音高纵横向排列组合， 配器中的音色组合，曲式中的并行、对置、对称、回旋、奏鸣等等，都可以被描述为单 一或组合的算法。这些从本质上决定了 AI 技术可以较好地应用到音乐创作上。而巴赫 的乐曲具有结构工整的和谐美，其内在严密的逻辑性使其成为算法作曲实践的良好训练材料。</p>
+</div>
+<div class="section">
+  <h2>过程</h2>
+  <h3>数据获取</h3>
+  <p>首先，通过<a href="http://www.jsbach.net/midi/index.html">这个网站</a>下载其中 <code>The English Suites</code> 系列中的所有钢琴曲。</p>
+  <p>解压zip文件之后，获得48首巴赫作品的midi文件，总共480KB，98分钟的数据。</p>
+  <p>之后，用 <code>Midicsv.exe</code> 将 .mid 文件转化为 Python 可以处理的 .csv 文件。<a href="http://www.fourmilab.ch/webtools/midicsv/">这里</a>是它的下载地址和文档。</p>
+  <p>通过 Python 的 os 模块直接调用这个工具，可以实现批量转化：</p>
+  <pre>import os
+
+os.system(".\\Midicsv.exe .\\the-midi-file.mid .\\target-csv-file.csv)</pre>
+
+  <h3>数据处理</h3>
+  <p>虽然现在得到了 .csv 文件，但是文件中含有很多多余信息：</p>
+  <pre>...
+2, 2160, Note_on_c, 0, 81, 107
+2, 2400, Note_on_c, 0, 76, 107
+2, 2520, Note_on_c, 0, 73, 107
+2, 2880, Note_on_c, 0, 69, 107
+2, 2976, Note_on_c, 0, 81, 0
+2, 3000, Note_on_c, 0, 80, 107
+2, 3072, Note_on_c, 0, 76, 0
+...</pre>
+  <p>需要重新设计一种文件格式满足以下要求</p>
+  <ul>
+    <li>尽量减少不必要的/重复的字符</li>
+    <li>保留原有的时间格式</li>
+    <li>保留多个音之间的关系（例如同时弹奏）</li>
+  </ul>
+  <p>受到 <a href="https://www.youtube.com/channel/UC9z7EZAbkphEMg0SP7rw44A">carykh</a> 的启发，可以使用一个 Unicode 字符来代表一个琴键。(<a href="https://www.ascii-code.com/">这里</a>有一份ANSCII对照表）并且，通过使用空格隔开字符，能够将整个乐曲分解为一个个的小片段，保留了时间特征和多音弹奏的效果。这样，就可以把一首乐曲转化为一段字符串。</p>
+<pre># 创建临时文件夹储存 csv 文件
+def make_temp_folder():
+    try:
+        os.makedirs(temp_path)
+    except:
+        shutil.rmtree(temp_path)
+        os.makedirs(temp_path)
+
+# 将 csv 文件转换为 Unicode 字节
+def encode(csv_string, params):
+    score = []
+
+    # 整理读取的 csv 字符串
+    for row in csv_string:
+        if len(row) < 6 or not re.search('[N|n]ote', row[2]):
+            continue
+        tick = int(int(row[1]) / params.sample_rate)
+        note = int(row[4])
+        on_off = not(re.search('[O|o]ff', row[2]) or int(row[5]) is 0)
+        score.append([tick, note, on_off])
+    
+    # 按照 midi tick 时间排序
+    score.sort()
+    
+    keys = []
+    result_str = ''
+    for t in range(0, tick+1):
+        for note in score:
+            if note[0] == t:
+                note_chr = chr(note[1] + params.offset)
+                if note[2] and note_chr not in keys:
+                    keys.append(note_chr)
+                if not note[2]:
+                    if note_chr in keys:
+                        keys.remove(note_chr)
+        for key in keys:
+            result_str += key
+        if not keys:
+            result_str += '~'
+        result_str += ' '
+    return result_str</pre>
+  <p>精简后的文件大小为 981KB。</p>
+
+  <h3>训练网络</h3>
+  <p>使用由 sherjilozair 提供的 <a href="https://github.com/sherjilozair/char-rnn-tensorflow">char-rnn-tensorflow</a>。这个项目是由 Andrej Karpathy 著名的 Char-RNN 移植到 tensorflow 平台而来的。</p>
+  <p>这个模型所使用的超参数是这些：</p>
+  <pre>data_file = ".\\train.data"
+encoding = 'utf-8'
+output_dir = ".\\output\\"
+n_save = 1				   # how many times to save the model during each epoch.
+max_to_keep = 3			    # how many recent models to keep
+hidden_size = 256			# size of RNN hidden state vector
+embedding_size = 0			# size of character embeddings
+num_layers = 3			    # number of layers in the RNN
+num_unrollings = 20			# number of unrolling steps.
+model = 'lstm'			    # which model to use (rnn, lstm or gru).
+num_epochs = 200			# number of epochs
+batch_size = 40			    # minibatch size
+train_frac = 0.9			# fraction of data used for training.
+valid_frac = 0.05			# fraction of data used for validation.
+                             # test_frac is computed as (1 - train_frac - valid_frac).
+dropout = 0.4			    # dropout rate, default to 0 (no dropout).
+input_dropout = 0.0			# ('dropout rate on input layer, default to 0 (no dropout), and no dropout if using one-hot representation.
+max_grad_norm = 5			# clip global grad norm
+learning_rate = 3e-3		# initial learning rate
+decay_rate = 0.95			# decay rate
+init_dir = ''
+init_model = ''
+log_to_file = debug = test = False
+progress_freq = 100			# frequency for progress report in training and evalution.
+verbose = 1			        # whether to show progress report in training and evalution.</pre>
+
+  <h3>结果</h3>
+  <p>再通过一段代码将生成的字节重新编码为 midi 文件</p>
+  <pre>def decode(string, params):
+    make_temp_folder()
+    if re.search('.data', string):
+        with open(string, encoding='utf-8') as f:
+            string = f.read()
+    content = string.split(' ')
+
+    if not re.search('.mid', params.output_name):
+        params.output_name += '.mid'
+    csv_name = os.path.join(temp_path, params.output_name.replace('.mid', '.csv'))
+    with open(csv_name, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+
+        # write the headers required for the midi file
+        writer.writerow([0, 0, 'Header', 1, 4, 240])
+        writer.writerow([1, 0, 'Start_track'])
+        writer.writerow([1, 0, 'Title_t', '"Piano Improvisation - NAI"'])
+        
+        keys = []
+        for t, chap in enumerate(content):        
+            if chap is '~':
+                continue
+            for note in chap:
+                if note not in keys:
+                    keys.append(note)
+                    writer.writerow([1, t * params.sample_rate, 'Note_on_c', 0, ord(note)-params.offset, 107])
+            for key in keys:
+                if key not in chap:
+                    keys.remove(key)
+                    writer.writerow([1, t * params.sample_rate, 'Note_off_c', 0, ord(key)-params.offset, 0])
+            
+        writer.writerow([1, t * params.sample_rate, 'End_track'])
+        writer.writerow([0, 0, 'End_of_file'])
+    os.system(".\\dependencies\\Csvmidi.exe " + csv_name + " .\\" + params.output_name)
+    shutil.rmtree(temp_path)import csv
+import os
+import re
+import time
+
+SAMPLE_RATE = 10
+
+def cvt_chrmid_2_csv(filename, filename_out):
+    file = open(filename, encoding='utf-8')
+    string = file.read()
+    file.close()
+    string = string.split(' ')
+    keys = []
+    prev_keys = []
+    t = 0
+    with open('result\\'+filename_out, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([0, 0, 'Header', 1, 4, 240])
+        writer.writerow([1, 0, 'Start_track'])
+        for line in string:
+            if re.search('~', line):
+                t += SAMPLE_RATE
+                continue
+            for note in line:
+                if note not in keys:
+                    keys.append(note)
+                    if 0 <= ord(note) <= 127:
+                        writer.writerow([1, t, 'Note_on_c', 0, ord(note), 107])
+            for note in keys:
+                if note not in line:
+                    keys.remove(note)
+                    if 0 <= ord(note) <= 127:
+                        writer.writerow([1, t, 'Note_off_c', 0, ord(note), 0])
+            t += SAMPLE_RATE
+        writer.writerow([1, t, 'End_track'])
+        writer.writerow([0, 0, 'End_of_file'])
+def cvt_csv_2_midi(filepath):
+    time.sleep(4)
+    csv_list = list(os.walk(filepath))[0][2]
+    for csv in csv_list:
+        midi = csv.replace('.csv', '.mid')
+        os.system("tool\Csvmidi.exe .\\result\\"+csv+" .\\result\\"+midi)
+
+cvt_chrmid_2_csv('output.txt', 'result.csv')
+cvt_csv_2_midi('result')</pre>
+  <p>最后的乐谱如图所示</p>
+  <img width="50%" src="first-good-piece-visualized.png">
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/9aHlzev4pPM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+
+<div class="section">
+  <h2>总结</h2>
+  <p>总体来说，结果比较符合预期。</p>
+  <p>网络学会了和弦之间的搭配、节奏以及乐章的基本规律。但是仍然有部分区域的音符显得很不和谐。</p>
+  <p>未来可以改进的一点是通过重新设计网络，构造一个拥有88个输入的神经网络。这样的话可以直接将琴键对应到输入端，不必通过字符转换。可能更有利于效率，达到更好的结果。</p>
+  <p>另外，未来也可以尝试利用这种模式生成其他风格的音乐，学习其他乐器，并且结合自然语言处理的文字到语音转换实现歌声。</p>
+</div>
+
+<div class="section">
+  <h2>参考</h2>
+  <p>carykh. (2017). Computer evolves to generate baroque music! Youtube.  [Online]. Available: <a href="https://www.youtube.com/watch?v=SacogDL_4JU&t=2s">https://www.youtube.com/watch?v=SacogDL_4JU&t=2s</a></p>
+  <p>Karpathy, A. (2015). The Unreasonable Effectiveness of Recurrent Neural Networks. Andrej Karpathy blog. [Online]. Available: <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/">http://karpathy.github.io/2015/05/21/rnn-effectiveness/</a></p>
+</div>

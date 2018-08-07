@@ -8,9 +8,13 @@ music generation based on Char-RNN neural network
 
 
 
+
+
 ## Demo
 
 → [YouTube Video](https://www.youtube.com/watch?v=9aHlzev4pPM) ←
+
+
 
 
 
@@ -20,6 +24,8 @@ music generation based on Char-RNN neural network
 - TensorFlow >= 1.2
 
 Follow the instructions on [TensorFlow official website](https://www.tensorflow.org/) to install TensorFlow. 
+
+
 
 
 
@@ -78,9 +84,13 @@ tensorboard --logdir=your-output-folder/tensorboard_log
 
 
 
+
+
 ## Publication
 
 [music generation based on char-rnn neural network](doc/music_generation_based_on_char-rnn_neural_network.html), published at [Artificial Intelligence VIEW](基于Char-RNN的音乐生成 实践与算法作曲尝试.pdf)
+
+
 
 
 

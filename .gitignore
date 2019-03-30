@@ -1,5 +1,7 @@
 ./history/
 
+*.mid
+
 tensorboard_log/
 __pycache__/
 

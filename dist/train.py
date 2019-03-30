@@ -37,7 +37,7 @@ class Hyperparameters:
     progress_freq = 100			# frequency for progress report in training and evalution.
     verbose = 1			        # whether to show progress report in training and evalution.
 
-def main():
+def run():
 
     args = Hyperparameters()
 
@@ -284,4 +284,4 @@ def save_vocab(vocab_index_dict, vocab_file, encoding):
         json.dump(vocab_index_dict, f, indent=2, sort_keys=True)
         
 if __name__ == '__main__':
-    main()
+    run()

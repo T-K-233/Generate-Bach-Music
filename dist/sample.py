@@ -2,6 +2,7 @@ import codecs
 import json
 import os
 import re
+import time
 
 import random
 from model import *
@@ -18,12 +19,14 @@ class Hyperparameters:
     temperature = 0.7           # Temperature for sampling from softmax: ''higher temperature, more random; 'lower temperature, more greedy.
     max_prob = False
     start_text = "~ "
-    length = 10000
+    length = 100
     seed = random.randint(0, 100)
     evaluate = debug = False
     
-def run(length=None):
+def run(length=None, seed=None):
     args = Hyperparameters()
+    if seed:
+        args.seed = seed
     if length:
         args.length = length
     # Prepare parameters.
@@ -78,3 +81,4 @@ def run(length=None):
 if __name__ == '__main__':
     sample = run()
     print(sample)
+        
